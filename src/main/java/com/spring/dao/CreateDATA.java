@@ -18,13 +18,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
+import com.spring.dao.imp.ChapDAO;
 import com.spring.model.Book;
 import com.spring.model.Chap;
+import com.spring.model.Page;
 
 import util.SystemContain;
 
 public class CreateDATA {
+	
 	public List<Book> getAllBookFromTo(int from, int to){
 		List<Book> list = new ArrayList<Book>();
 		
@@ -163,12 +168,14 @@ public class CreateDATA {
 			div = document.getElementsByClass("post-wrapper");
 			Elements tagA = null;
 			int idBook = 1;
+			int id = 1;
 			int nextBook = 0;
 			for(Element d : div) {
 				tagA = d.getElementsByTag("a");
 				String title = tagA.get(0).html().replace("Tập", "Chap");
-				Chap chap = new Chap(idBook, title, title.split(":")[0].replace("Chap ", "chap-"), tagA.get(0).absUrl("href"));
+				Chap chap = new Chap(id, idBook, title, title.split(":")[0].replace("Chap ", "chap-"), tagA.get(0).absUrl("href"));
 				list.add(chap);
+				id++;
 				nextBook++;
 				if(nextBook == 10) {
 					nextBook = 0;
@@ -182,8 +189,9 @@ public class CreateDATA {
 				
 				for(Element d : div) {
 					tagA = d.getElementsByTag("a");String title = tagA.get(0).html().replace("Tập", "Chap");
-					Chap chap = new Chap(idBook, title, title.split(":")[0].replace("Chap ", "chap-"), tagA.get(0).absUrl("href"));
+					Chap chap = new Chap(id, idBook, title, title.split(":")[0].replace("Chap ", "chap-"), tagA.get(0).absUrl("href"));
 					list.add(chap);
+					id++;
 					nextBook++;
 					if(nextBook == 10) {
 						nextBook = 0;
@@ -197,6 +205,43 @@ public class CreateDATA {
 		
 		return list;
 	}
+	
+	public static List<Page> getAllPage(){
+		List<Page> list = new ArrayList<Page>();
+		
+		ChapDAO dao = new ChapDAO();
+		List<Chap>  listChap = dao.getAll();
+		double percent = (double) listChap.size() / 100;
+		int nowPercent = 0;
+		for(int i = 0; i < listChap.size(); i++) {
+			Document document;
+			try {
+				document = Jsoup.connect(listChap.get(i).getUrlChap()).get();
+				Elements div = document.getElementsByClass("truyen-tranh");
+				
+				
+				for(Element d : div) {
+					Page page = new Page(listChap.get(i).getId(), d.absUrl("src"));
+					list.add(page);
+				}
+				
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			int check = i + 1;
+			if( check >= (nowPercent + 1) * percent) {
+				nowPercent = (int) (check / percent);
+				System.out.println(nowPercent + " %");
+			}
+			
+		}
+		
+		
+		return list;
+	}
+	
+	
 	private static HSSFCellStyle createStyleForTitle(HSSFWorkbook workbook) {
         HSSFFont font = workbook.createFont();
         font.setBold(true);
@@ -218,21 +263,26 @@ public class CreateDATA {
  
         row = sheet.createRow(rownum);
  
-        // EmpNo
+        // ID book
         cell = row.createCell(0, CellType.STRING);
         cell.setCellValue("Id Book");
         cell.setCellStyle(style);
-        // EmpName
+        // Title
         cell = row.createCell(1, CellType.STRING);
         cell.setCellValue("Title");
         cell.setCellStyle(style);
-        // Salary
+        // Alias
         cell = row.createCell(2, CellType.STRING);
         cell.setCellValue("Alias");
         cell.setCellStyle(style);
-        // Grade
+        // URL CHap
         cell = row.createCell(3, CellType.STRING);
         cell.setCellValue("Url chap");
+        cell.setCellStyle(style);
+        
+        // URL CHap
+        cell = row.createCell(4, CellType.STRING);
+        cell.setCellValue("Id");
         cell.setCellStyle(style);
  
         // Data
@@ -252,9 +302,80 @@ public class CreateDATA {
             // Grade (D)
             cell = row.createCell(3, CellType.STRING);
             cell.setCellValue(model.getUrlChap());
+            // Grade (E)
+            cell = row.createCell(4, CellType.STRING);
+            cell.setCellValue(model.getId());
         }
-        File file = new File(SystemContain.URL_FILE_CHAP);
+        Resource resource = new ClassPathResource(SystemContain.URL_FILE_CHAP);
+        File file = null;
+		try {
+			file = resource.getFile();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         file.getParentFile().mkdirs();
+ 
+        FileOutputStream outFile;
+		try {
+			outFile = new FileOutputStream(file);
+			workbook.write(outFile);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        System.out.println("Created file: " + file.getAbsolutePath());
+	}
+	
+	public  static void downloadPageToExcel() {
+		HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet("Page sheet");
+        List<Page> list = getAllPage();
+ 
+        int rownum = 0;
+        Cell cell;
+        Row row;
+        //
+        HSSFCellStyle style = createStyleForTitle(workbook);
+ 
+        row = sheet.createRow(rownum);
+ 
+        // ID chap
+        cell = row.createCell(0, CellType.STRING);
+        cell.setCellValue("Id Chap");
+        cell.setCellStyle(style);
+        
+        // URL page
+        cell = row.createCell(1, CellType.STRING);
+        cell.setCellValue("Url image");
+        cell.setCellStyle(style);
+ 
+        // Data
+        for (Page model : list) {
+            rownum++;
+            row = sheet.createRow(rownum);
+ 
+            // EmpNo (A)
+            cell = row.createCell(0, CellType.STRING);
+            cell.setCellValue(model.getIdChap());
+            // EmpName (B)
+            cell = row.createCell(1, CellType.STRING);
+            cell.setCellValue(model.getUrlImg());
+        }
+        Resource resource = new ClassPathResource(SystemContain.URL_FILE_BOOK);
+        File file = null;
+		try {
+			file = new File(resource.getFile().getParentFile() + "/" + SystemContain.URL_FILE_PAGE);
+			if(!file.exists()) file.createNewFile();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        
  
         FileOutputStream outFile;
 		try {
@@ -274,6 +395,12 @@ public class CreateDATA {
 	public static void main(String[] args) throws IOException {
 		
 		
-		downloadChapToExcel();
+		//downloadChapToExcel();
+//		ChapDAO cha = new ChapDAO();
+//		System.out.println(cha.getAll().get(5).getTitle());
+//		
+//		BookDAO bok = new BookDAO();
+//		System.out.println(bok.getAll().get(5).getTitle());
+		downloadPageToExcel();
 	}
 }

@@ -19,19 +19,19 @@ public class ChapRestController {
 	@Autowired
 	private IChapService chapService;
 	
-	/* ---------------- GET ALL BOOK ------------------------ */
+	/* ---------------- GET ALL CHAP ------------------------ */
 	@RequestMapping(value = "/chaps", method = RequestMethod.GET)
 	public ResponseEntity<List<Chap>> getAll() {
 		List<Chap> list = chapService.getAll();
 		return new ResponseEntity<List<Chap>>(list, HttpStatus.OK);
 	}
 
-	/* ---------------- GET ONE BOOK ------------------------ */
+	/* ---------------- GET ONE CHAP ------------------------ */
 	@RequestMapping(value = "/chaps/{id}", method = RequestMethod.GET)
 	public ResponseEntity<List<Chap>> getChapByBookId(@PathVariable int id) {
 		List<Chap> list = chapService.getAllByBookId(id);
 		if (list == null)
-			return new ResponseEntity<List<Chap>	>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<List<Chap>>(HttpStatus.NOT_FOUND);
 		return new ResponseEntity<List<Chap>>(list, HttpStatus.OK);
 
 	}

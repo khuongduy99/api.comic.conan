@@ -76,7 +76,10 @@ public class ChapDAO implements IChapDAO {
 					case 3:
 						chap.setUrlChap((String) getCellValue(cell));
 						break;
-
+					case 4:
+						 res = (Double) getCellValue(cell);
+						chap.setId((int) res);
+						break;
 					default:
 						break;
 					}
@@ -156,7 +159,10 @@ public class ChapDAO implements IChapDAO {
 					case 3:
 						chap.setUrlChap((String) getCellValue(cell));
 						break;
-
+					case 4:
+						 res = (Double) getCellValue(cell);
+						chap.setId((int) res);
+						break;
 					default:
 						break;
 					}

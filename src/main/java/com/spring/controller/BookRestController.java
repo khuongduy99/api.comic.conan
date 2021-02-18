@@ -11,13 +11,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.model.Book;
+import com.spring.model.Chap;
 import com.spring.service.IBookService;
+import com.spring.service.IChapService;
 
 @RestController
 public class BookRestController {
 	
 	@Autowired
 	private IBookService bookService;
+	
+	@Autowired
+	private IChapService chapService;
 	
 	/* ---------------- GET ALL BOOK ------------------------ */
 	@RequestMapping(value = "/books", method = RequestMethod.GET)
@@ -27,12 +32,22 @@ public class BookRestController {
 	}
 
 	/* ---------------- GET ONE BOOK ------------------------ */
-	@RequestMapping(value = "/books/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/book/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Book> getBookById(@PathVariable int id) {
 		Book model = bookService.getOneById(id);
 		if (model == null)
 			return new ResponseEntity<Book>(HttpStatus.NOT_FOUND);
 		return new ResponseEntity<Book>(model, HttpStatus.OK);
+
+	}
+	
+	/* ---------------- GET ALL CHAP OF ONE BOOK ------------------------ */
+	@RequestMapping(value = "/book/{id}/chaps", method = RequestMethod.GET)
+	public ResponseEntity<List<Chap>> getAllChapByIdBook(@PathVariable int id) {
+		List<Chap> list = chapService.getAllByBookId(id);
+		if (list == null)
+			return new ResponseEntity<List<Chap>>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<List<Chap>>(list, HttpStatus.OK);
 
 	}
 }

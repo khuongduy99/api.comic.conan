@@ -1,13 +1,15 @@
 package com.spring.model;
 
 public class Chap {
+	private int id;
 	private int idBook;
 	private String title;
     private String alias;
     private String urlChap;
     
-	public Chap(int idBook, String title, String alias, String urlChap) {
+	public Chap(int id, int idBook, String title, String alias, String urlChap) {
 		super();
+		this.id = id;
 		this.idBook = idBook;
 		this.title = title;
 		this.alias = alias;
@@ -38,6 +40,13 @@ public class Chap {
 	}
 	public void setUrlChap(String urlChap) {
 		this.urlChap = urlChap;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	@Override
 	public String toString() {

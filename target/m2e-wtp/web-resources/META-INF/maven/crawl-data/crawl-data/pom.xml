@@ -72,9 +72,8 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>${poi.version}</version>
 		</dependency>
-
 	</dependencies>
-	
+
 	<build>
 		<finalName>api-comic-conan</finalName>
 		<plugins>
