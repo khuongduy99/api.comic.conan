@@ -216,7 +216,87 @@ public class ChapDAO implements IChapDAO {
 	}
 
 	public Chap getOneById(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		Chap model = null;
+		// Get file
+		InputStream inputStream;
+		try {
+			Resource resource = new ClassPathResource(SystemContain.URL_FILE_CHAP);
+
+			inputStream = resource.getInputStream();
+			Workbook workbook = new HSSFWorkbook(inputStream);
+			// Get workbook
+
+			// Get sheet
+			Sheet sheet = workbook.getSheetAt(0);
+			boolean isFind = false;
+			// Get all rows
+			Iterator<Row> iterator = sheet.iterator();
+			while (iterator.hasNext()) {
+				Row nextRow = iterator.next();
+				if (nextRow.getRowNum() == 0) {
+					// Ignore header
+					continue;
+				}
+				if (isFind)
+					break;
+				boolean isStop = false;
+				// Get all cells
+				Iterator<Cell> cellIterator = nextRow.cellIterator();
+
+				// Read cells and set value for book object
+				Chap chap = new Chap();
+				while (cellIterator.hasNext()) {
+					if (isStop)
+						break;
+					// Read cell
+					Cell cell = cellIterator.next();
+					Object cellValue = getCellValue(cell);
+					if (cellValue == null || cellValue.toString().isEmpty()) {
+						continue;
+					}
+					// Set value for book object
+					int columnIndex = cell.getColumnIndex();
+					switch (columnIndex) {
+					case 0:
+						double res = (Double) getCellValue(cell);
+						if (id != (int) res) {
+							isStop = true;
+							break;
+						}
+						chap.setId((int) res);
+						isFind = true;
+						break;
+					case 1:
+						chap.setTitle((String) getCellValue(cell));
+						break;
+					case 2:
+						chap.setAlias((String) getCellValue(cell));
+						break;
+					case 3:
+						chap.setUrlChap((String) getCellValue(cell));
+						break;
+					case 4:
+						 res = (Double) getCellValue(cell);
+						chap.setId((int) res);
+						break;
+					default:
+						break;
+					}
+
+				}
+
+				if (!isStop)
+					model = chap;
+			}
+
+			workbook.close();
+			inputStream.close();
+		} catch (FileNotFoundException e) {
+			return null;
+		} catch (IOException e) {
+			return null;
+		}
+
+		return model;
 	}
 }

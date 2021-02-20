@@ -10,15 +10,4 @@ public class BaseController {
 	  public String index() {
 	    return "index";
 	  }
-	
-	@RequestMapping("/trangchu")
-	  public String content() {
-	    return "content";
-	  }
-	
-	@RequestMapping("/tap")
-		public String tap() {
-			return "chap";
-		}
- 
 }

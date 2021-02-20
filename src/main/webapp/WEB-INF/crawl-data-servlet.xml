@@ -17,6 +17,4 @@
       <value>.jsp</value>
     </property>
   </bean>
-  
-  <mvc:resources location="/template/" mapping="/template/**" />
 </beans>
