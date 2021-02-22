@@ -223,9 +223,45 @@ public class BookDAO implements IBookDAO {
 	}
 
 	public static void main(String[] args) {
-		BookDAO dao = new BookDAO();
-		List<Book> b = dao.getAll();
-		System.out.println(b.size());
+		int arr[] = { -1,-2,-4,-5,-3,7,8};
+		boolean res = false;
+		for (int i = 0; i < arr.length - 4; i++) {
+			int subarr[] = new int[5];
+			subarr[0] = arr[i];
+			subarr[1] = arr[i + 1];
+			subarr[2] = arr[i + 2];
+			subarr[3] = arr[i + 3];
+			subarr[4] = arr[i + 4];
+			boolean trung = false;
+			for (int j = 0; j < subarr.length; j++) {
+				for (int k = j + 1; k < subarr.length; k++) {
+					if (subarr[j] == subarr[k]) {
+						trung = true;
+						break;
+					}
+				}
+			}
+			if (trung == false) {
+				int min = subarr[0];
+				int max = subarr[0];
+				for (int j = 0; j < subarr.length; j++) {
+					if(subarr[j] > max) max = subarr[j];
+					if(subarr[j] < min) min = subarr[j];
+				}
+				int res1 = 0;
+				for(int l = min; l < min + 5; l++) {
+					res1 = res1 + l;
+				}
+				
+				int res2 = 0;
+				for(int l = min; l <= max; l++) {
+					res2 = res2 + l;
+				}
+				if(res1 == res2) res = true;
+				
+			}
+		}
+		System.out.println(res);
 	}
 
 }
