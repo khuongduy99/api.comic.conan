@@ -259,12 +259,7 @@ public class ChapDAO implements IChapDAO {
 					switch (columnIndex) {
 					case 0:
 						double res = (Double) getCellValue(cell);
-						if (id != (int) res) {
-							isStop = true;
-							break;
-						}
-						chap.setId((int) res);
-						isFind = true;
+						chap.setIdBook((int) res);
 						break;
 					case 1:
 						chap.setTitle((String) getCellValue(cell));
@@ -277,7 +272,12 @@ public class ChapDAO implements IChapDAO {
 						break;
 					case 4:
 						 res = (Double) getCellValue(cell);
+						if (id != (int) res) {
+							isStop = true;
+							break;
+						}
 						chap.setId((int) res);
+						isFind = true;
 						break;
 					default:
 						break;
@@ -299,4 +299,5 @@ public class ChapDAO implements IChapDAO {
 
 		return model;
 	}
+	
 }
